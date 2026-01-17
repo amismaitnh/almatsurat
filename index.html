@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutabaah Aktivis Markaz Islami</title>
+    <style>
+        :root {
+            --primary: #736b23;
+            --secondary: #9ade24;
+            --accent: #f5de3e;
+            --light: #ecf0f1;
+            --dark: #0d0a06;
+            --text: #333;
+            --text-light: #777;
+            --gold: #FFD700;
+            --silver: #C0C0C0;
+            --bronze: #CD7F32;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--light); color: var(--text); line-height: 1.6; }
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        header { background-color: white; color: var(--text); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; gap: 12px; }
+        .logo-icon { width: 60px; height: 60px; border-radius: 50%; object-fit: contain; }
+        .menu-btn { 
+            display: flex; 
+            flex-direction: column; 
+            cursor: none; 
+            gap: 6px; 
+        }
+        .menu-btn span { 
+            width: 30px; 
+            height: 4px; 
+            background-color: var(--text); 
+            border-radius: 2px; 
+            transition: background-color 0.2s ease; 
+        }
+
+        .dropdown { 
+            position: absolute; 
+            top: 100%; 
+            right: 5%; 
+            background-color: white; 
+            min-width: 220px; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95) translateY(-8px);
+            transform-origin: top right;
+            transition: none;
+        }
+
+        .dropdown.active { 
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+            transition: opacity 0.18s ease-out, 
+                        transform 0.18s ease-out;
+        }
+
+        .dropdown a { 
+            display: block; 
+            padding: 14px 20px; 
+            color: var(--text); 
+            text-decoration: none; 
+            font-size: 1.1rem; 
+            transition: background 0.2s ease; 
+            cursor: none;
+        }
+        .dropdown a:active {
+            background-color: var(--light);
+        }
+
+        /* Submenu styles */
+        .dropdown .menu-parent {
+            display: block;
+            padding: 14px 20px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: background 0.2s ease;
+            position: relative;
+            cursor: none;
+        }
+        .dropdown .menu-parent:active {
+            background-color: var(--light);
+        }
+        .dropdown .arrow {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.4rem;
+            transition: transform 0.2s ease;
+        }
+        .dropdown .menu-parent.active .arrow {
+            transform: translateY(-50%) rotate(90deg);
+        }
+        .dropdown .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .dropdown .submenu.active {
+            max-height: 400px;
+        }
+        .dropdown .submenu a {
+            padding: 12px 40px;
+            font-size: 1rem;
+        }
+
+        main { margin-top: 80px; padding: 2rem 5%; min-height: calc(100vh - 80px); }
+        .welcome { text-align: center; padding: 3rem 0; color: var(--text); margin-bottom: 3rem; margin-top: 3rem; }
+        .welcome h1 { font-size: 3rem; margin-bottom: 1rem; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .container h2 { font-size: 2rem; }
+        .container p { text-align: center; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; transition: transform 0.3s ease; }
+        .card:active { background: var(--light); }
+        .goals { padding: 0 5%; }
+        .goals h2 { color: var(--text); font-size: 2rem; }
+        .goals a { color: var(--text); text-decoration: none; cursor: none; }
+        .card h3 { color: var(--text); font-size: 1.6rem; }
+        .reset-btn { display: block; margin: 5rem auto; padding: 1rem 2rem; background: #e74c3c; color: white; border: none; border-radius: 50px; cursor: none; }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 3rem 2rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+        .modal-content h2 {
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        .modal .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .modal .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        /* Custom Select untuk Nama */
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+        .custom-select input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--text-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: transparent;
+            outline: none;
+            cursor: text;
+        }
+        .custom-select .options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--text-light);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .custom-select .options.active {
+            display: block;
+        }
+        .custom-select .options li {
+            padding: 12px 16px;
+            cursor: none;
+            transition: background 0.2s;
+        }
+        .custom-select .options li:hover {
+            background: var(--light);
+        }
+
+        .modal .submit-btn {
+            background: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: none;
+            width: 100%;
+            margin-top: 1rem;
+            transition: 0.3s;
+        }
+        .modal .submit-btn:active {
+            background: var(--accent);
+        }
+        .modal .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: var(--text-light);
+            cursor: none;
+        }
+        .modal .close:hover {
+            color: var(--text);
+        }
+        .modal .skip {
+            margin-top: 1rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        .modal .skip a {
+            color: var(--text);
+            text-decoration: underline;
+            cursor: none;
+        }
+
+        @media (max-width: 768px) { 
+            .logo { font-size: 1.2rem; } 
+            .welcome h1 { font-size: 2rem; } 
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html"><img src="logo.png" alt="Logo Markaz Islami" class="logo-icon"></a>
+            <h3>Aktivis Markaz Islami</h3>
+        </div>
+        <div class="menu-btn" id="menuBtn">
+            <span></span><span></span><span></span>
+        </div>
+        <nav class="dropdown" id="dropdown">
+            <div class="menu-parent" id="progressToggle">
+                Dzikr <span class="arrow">&gt;</span>
+            </div>
+            <div class="submenu" id="progressSubmenu">
+                <a href="morning.html">Pagi</a>
+                <a href="evening.html">Sore</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="welcome">
+            <h1 id="welcomeTitle">Selamat Datang Al Ma'tsurat AMI</h1>
+        </section>
+
+        <div class="container">
+            <div class="goals">
+                <h2 style="text-align: center; margin: 3rem 0 2rem;">Dzikr</h2>
+                <div class="cards">
+                    <a href="morning.html">
+                        <div class="card">
+                            <h3>Pagi</h3>
+                        </div>
+                    </a>
+                    <a href="evening.html">
+                        <div class="card">
+                            <h3>Sore</h3>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <button class="reset-btn" onclick="if(confirm('Reset data \nama pengguna? Modal nama akan muncul lagi.')) { localStorage.removeItem('mutabaahData'); localStorage.removeItem('mutabaahUserName'); location.reload(); }">Reset Data</button>
+        </div>
+    </main>
+
+    <!-- Modal Input Nama (nama bebas, daftar hanya sebagai saran) -->
+    <div id="nameModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Selamat Datang!</h2>
+            <p style="margin-bottom: 15px;">Silakan masukkan nama Anda.</p>
+            <div class="form-group">
+                <div class="custom-select">
+                    <input type="text" id="modalNameInput" placeholder="Ketik nama Anda atau pilih dari saran" autocomplete="off">
+                    <div class="options" id="modalOptions">
+                        <ul id="modalOptionsList"></ul>
+                    </div>
+                </div>
+            </div>
+            <button class="submit-btn" id="saveNameBtn">Simpan Nama</button>
+            <div class="skip"><a href="#" id="skipLink">Lewati untuk sekarang</a></div>
+        </div>
+    </div>
+
+    <script>
+    const nameList = [ /* daftar nama tetap sama seperti kode asli */
+        "Ahsanurrizqi", "Azmina Tsania Mafaza", "Alimul Haq Al Fatih", "Alifah Hasna Setyawan", "Aqila Hanin Najiyya",
+        "Farid Abrar Ramadhan", "Zalfan Almundzir", "Athiya Khaerunnisa", "Alma Ryzqya Ramadhani", "Fauzan Rijalul Jaddid",
+        "Hasna Rifaya Nafiah", "Ahmad Ali Nafis Mujahir", "Muhammad Faisal Iqbal", "Najwa Nur Azizah", "Aulia Devina Omantin",
+        "Fathir Hanifan Romadloni", "Tsabita Al Firdaus", "Syafiq Aufa Asykari", "Yasqi Azka Argani", "Ahmad Althaf Rizqillah",
+        "Naufal Ariq Saputra", "Fachryza Zuhair Nabil Arrazaq", "Fadhil Abdillah Ramadhan", "Muhammad Fathrizkzein Zidane",
+        "Muhammad Muzdahir Syafiq", "Aqila Adzkia", "Aufa Nissa' Al Majidah", "Faizah Mufidatun Azizah", "Fanny Afnan Jannati",
+        "Zharifah Himmah Al Alyyah", "Farah Asysan Syifa", "Najwa Aqilla Janitra", "Qanita Sharah Hafizhah", "Zainab Asshabira",
+        "Afra Mufidah Riyadi", "Nabila Tsabita Rahmania", "Yusuf Azzam Hafi", "Annisa Zulfa Salsabila", "Fadly Maulana An-Nafi",
+        "Nidzar Hammam Ismath", "Hidayat Nur Aziz", "Muhammad Imanulhaq", "Muhammad Tsaqib Hilmi A.", "Naufal Ghoniyun Karim",
+        "Reyza Emirsyah Hidayat", "Tsabit Abdussalam Akif N. S.", "Azalia Rahma Nirmala Dewi", "Najla Khairunnisa",
+        "Khansa Putri Risdianto", "Arkani Kayla Khairunnisa", "Ayesha Ahnaf Hammasyah", "Khonza Adzkia", "Chandrika Kania Damara",
+        "Aisya Nadira", "Hasna Dzakia Salma K.", "Kainuna Regita Khairunnisa", "Zahratul Khoiriyyah", "Sholiha Bilqis Trikurnia",
+        "Umar Fakhruddin Khairullah", "Aisyah Mar'atus Sholikah", "Maulana Ibnu Faiq", "Zaky Zydan Ramtizi",
+        "Azzam Nur Tsabita Arif", "Zufar Abdillah Tsaqif", "Rais Hikari", "Miftahuddin Ghoffar As Sidiq", "Affan Rasyid Ilman",
+        "Rizqi Akhtar Putra Sunanda", "Aderisti Maurelia Putri", "Aliya Nuha Humaira Mushoffa", "Nada Zaafarani Assyifa",
+        "Syarifah Nugraheningsih", "Salwaa Alyaa' Prameshwari", "Rofi Munajati", "Keyla Nurkhasna Qoni'ah",
+        "Athaya Yasmin Althafunnisa", "Khansa", "Zalyani Niswatun Nafi'ah", "Ikhtia Hauraya Annizar",
+        "Nisa'ul Akmaal G. M. N. L.", "Hilya Nada Aufia", "Syauqi Firdaus Fiiridhotillah", "Alyaa Widya Arza Sentosa",
+        "Rafif Syauqi Nashrullah", "Hanan Ahmad Mukhayyar", "Zaidan Rais Altair", "Rizqullah Jihada Muhsin", "Andrew Shea",
+        "Ayyash Dhiyaulhaq Cunggin", "Gaozhan Wiby Al-Karimi", "Ba'ayu Febria Ristika", "Fatimah Naura Ulya",
+        "Haura Nada Tsabita", "Nafisa Azka Armandriani", "Rona Karima", "Annisa Rahma Aji", "Alya Dini Khoirunnisa",
+        "Hayan Hadi Gunjaya", "Ibrahim Banu Atiro", "Lathifah Lubna Azizah", "Runaisha Afra Shofia A.",
+        "Luthfia Inafi Muthi'ah", "Veisya Saffaina Sasongko"
+    ];
+    
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdown = document.getElementById('dropdown');
+    const progressToggle = document.getElementById('progressToggle');
+    const progressSubmenu = document.getElementById('progressSubmenu');
+    
+    menuBtn.addEventListener('click', () => {
+        menuBtn.classList.toggle('active');
+        dropdown.classList.toggle('active');
+    });
+    
+    progressToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        progressSubmenu.classList.toggle('active');
+        progressToggle.classList.toggle('active');
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            menuBtn.classList.remove('active');
+            dropdown.classList.remove('active');
+            progressSubmenu.classList.remove('active');
+            progressToggle.classList.remove('active');
+        }
+    });
+    
+    // Tutup dropdown saat mengklik link di dalamnya (sebelum navigasi)
+    document.querySelectorAll('.dropdown a').forEach(link => {
+        link.addEventListener('click', () => {
+            dropdown.classList.remove('active');
+            menuBtn.classList.remove('active');
+            progressSubmenu.classList.remove('active');
+            progressToggle.classList.remove('active');
+        });
+    });
+    
+    // Custom select dan modal nama (tetap sama seperti kode asli)
+    const modalNameInput = document.getElementById('modalNameInput');
+    const modalOptions = document.getElementById('modalOptions');
+    const modalOptionsList = document.getElementById('modalOptionsList');
+    
+    function populateNameOptions(filter = '') {
+        modalOptionsList.innerHTML = '';
+        const filtered = nameList.filter(name => name.toLowerCase().includes(filter.toLowerCase()));
+        filtered.forEach(name => {
+            const li = document.createElement('li');
+            li.textContent = name;
+            li.addEventListener('click', () => {
+                modalNameInput.value = name;
+                modalOptions.classList.remove('active');
+            });
+            modalOptionsList.appendChild(li);
+        });
+    }
+    
+    modalNameInput.addEventListener('click', () => {
+        populateNameOptions('');
+        modalOptions.classList.add('active');
+    });
+    
+    modalNameInput.addEventListener('focus', () => {
+        populateNameOptions(modalNameInput.value.trim());
+        modalOptions.classList.add('active');
+    });
+    
+    modalNameInput.addEventListener('input', () => {
+        populateNameOptions(modalNameInput.value.trim());
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!modalNameInput.contains(e.target) && !modalOptions.contains(e.target)) {
+            modalOptions.classList.remove('active');
+        }
+    });
+    
+    const nameModal = document.getElementById('nameModal');
+    const saveNameBtn = document.getElementById('saveNameBtn');
+    const closeBtn = document.querySelector('#nameModal .close');
+    const skipLink = document.getElementById('skipLink');
+    const welcomeTitle = document.getElementById('welcomeTitle');
+    
+    function openModal() {
+        nameModal.classList.add('active');
+        document.body.classList.add('modal-open');
+        populateNameOptions('');
+    }
+    
+    function closeModal() {
+        nameModal.classList.remove('active');
+        document.body.classList.remove('modal-open');
+    }
+    
+    const savedName = localStorage.getItem('mutabaahUserName');
+    
+    if (savedName) {
+        welcomeTitle.innerHTML = `Selamat Datang, ${savedName}!`;
+    } else {
+        openModal();
+    }
+    
+    saveNameBtn.addEventListener('click', () => {
+        const name = modalNameInput.value.trim();
+        if (name) {
+            localStorage.setItem('mutabaahUserName', name);
+            welcomeTitle.innerHTML = `Selamat Datang, ${name}!`;
+            closeModal();
+        } else {
+            alert('Mohon masukkan nama Anda.');
+        }
+    });
+    
+    closeBtn.addEventListener('click', closeModal);
+    skipLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeModal();
+    });
+</script>
+</body>
+</html>
