@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Isi Mutabaah - AMI</title>
+    <title>Morning - Al-Ma'tsurat AMI</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         :root {
@@ -15,11 +15,24 @@
             --text: #333;
             --text-light: #777;
         }
+        :root {
+    --arabic-size: 1.8rem;
+    --latin-size: 1.4rem;
+    --trans-size: 1.2rem;
+}
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* TAMBAHAN: Saat modal terbuka, background tidak bisa di-scroll */
+        body.modal-open {
+            overflow: hidden;
+            height: 100vh;
+            touch-action: none; /* mencegah scroll di mobile */
+        }
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--light); color: var(--text); line-height: 1.6; }
         header { background-color: white; color: var(--text); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .logo { display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; gap: 12px; }
         .logo-icon { width: 60px; height: 60px; border-radius: 50%; object-fit: contain; }
+                .logo-text { display: flex; flex-direction: column; justify-content: left; }
+        .school-name { font-size: 0.95rem; color: var(--text-light); margin-top: 1px; font-weight: normal; }
         .menu-btn { 
             display: flex; 
             flex-direction: column; 
@@ -117,27 +130,28 @@
         main { margin-top: 80px; padding: 2rem 5%; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 5%; }
         h1 { font-size: 2rem; color: var(--text); text-align: center; margin: 2rem 0; }
-
-        /* Styling khusus untuk teks Arabic */
+        
         .arabic {
-            font-size: 1.8rem;
-            line-height: 2.2; /* Jarak antar baris yang lebih lega */
-            direction: rtl;
-            text-align: right;
-            margin: 1.2rem 0;
-            word-spacing: 0.2rem;
-        }
+    font-size: var(--arabic-size);
+    line-height: 2.2;
+    direction: rtl;
+    text-align: right;
+    margin: 1.2rem 0;
+    word-spacing: 0.2rem;
+}
 
-        .latin {
-            font-style: italic;
-            margin: 1rem 0;
-            line-height: 1.8;
-        }
+.latin {
+    font-style: italic;
+    font-size: var(--latin-size);
+    margin: 1rem 0;
+    line-height: 1.8;
+}
 
-        .translation {
-            margin: 1.2rem 0;
-            line-height: 1.8;
-        }
+.translation {
+    font-size: var(--trans-size);
+    margin: 1.2rem 0;
+    line-height: 1.8;
+}
 
         .dzikir-section {
             margin-bottom: 2.5rem;
@@ -152,29 +166,162 @@
             margin-bottom: 1.5rem;
             color: var(--secondary);
         }
+        
+                /* Custom Range Slider (ubah warna menjadi hijau) */
+        .modal input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            background: var(--light);
+            border-radius: 10px;
+            outline: none;
+            margin: .5rem 0;
+        }
+        
+        .modal input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 22px;
+            width: 22px;
+            border-radius: 50%;
+            background: var(--secondary);
+            cursor: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal input[type="range"]::-moz-range-track {
+            background: transparent;
+        }
+        
+        .modal input[type="range"]::-moz-range-progress {
+            background: var(--secondary);
+            border-radius: 10px 0 0 10px;
+            height: 20px;
+        }
+                /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 3rem 2rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+        .modal-content h2 {
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+        .modal .form-group {
+            margin-bottom: 2rem;
+        }
+        .modal .form-group label {
+            display: block;
+            margin-bottom: .5rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+                .modal .submit-btn {
+            background: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: none;
+            width: 100%;
+            margin-top: 1rem;
+            transition: 0.3s;
+        }
+        .modal .submit-btn:active {
+            background: var(--accent);
+        }
+        .modal .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: var(--text-light);
+            cursor: none;
+        }
+        .modal .close:active {
+            color: var(--text);
+        }
+        .modal .skip {
+            margin-top: 1rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        .modal .skip a {
+            color: var(--text);
+            text-decoration: underline;
+            cursor: none;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <a href="index.html"><img src="logo.png" alt="Logo Markaz Islami" class="logo-icon"></a>
+<header>
+    <div class="logo">
+        <img src="logo.png" alt="Logo Markaz Islami" class="logo-icon">
+        <div class="logo-text">
             <h3>Aktivis Markaz Islami</h3>
+            <p class="school-name">SMAIT Nur Hidayah</p>
         </div>
-        <div class="menu-btn" id="menuBtn">
-            <span></span><span></span><span></span>
+    </div>
+    <div class="menu-btn" id="menuBtn">
+        <span></span><span></span><span></span>
+    </div>
+    <nav class="dropdown" id="dropdown">
+        <a href="index.html">Beranda</a>
+        <div class="menu-parent" id="progressToggle">
+            Dzikr <span class="arrow">&gt;</span>
         </div>
-        <nav class="dropdown" id="dropdown">
-            <a href="index.html">Beranda</a>
-            
-            <div class="menu-parent" id="progressToggle">
-                Dzikr <span class="arrow">&gt;</span>
-            </div>
-            <div class="submenu" id="progressSubmenu">
-                <a href="morning.html">Pagi</a>
-                <a href="evening.html">Sore</a>
-            </div>
-        </nav>
-    </header>
+        <div class="submenu" id="progressSubmenu">
+            <a href="morning.html">Pagi</a>
+            <a href="evening.html">Sore</a>
+        </div>
+        <a href="#" id="settingsLink">Pengaturan</a>
+    </nav>
+</header>
+!-- Modal Pengaturan Ukuran Teks -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Pengaturan Ukuran Teks</h2>
+        <div class="form-group">
+            <label for="arabicRange">Teks Arab</label>
+            <input type="range" id="arabicRange" min="10" max="40" step="1">
+            <span id="arabicValue" style="display:block; margin-top:8px; font-weight:bold;">1.8rem</span>
+        </div>
+        <div class="form-group">
+            <label for="latinRange">Latin</label>
+            <input type="range" id="latinRange" min="8" max="30" step="1">
+            <span id="latinValue" style="display:block; margin-top:8px; font-weight:bold;">1.4rem</span>
+        </div>
+        <div class="form-group">
+            <label for="transRange">Terjemahan</label>
+            <input type="range" id="transRange" min="8" max="30" step="1">
+            <span id="transValue" style="display:block; margin-top:8px; font-weight:bold;">1.2rem</span>
+        </div>
+        <button class="submit-btn" id="saveSettingsBtn">Simpan</button>
+    </div>
+</div>
 <main>
 <div class="container">
     <h1 class="page-title">Dzikir Sore Sugro</h1>
@@ -412,45 +559,158 @@
 </div>
 </main>
 
-    <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const dropdown = document.getElementById('dropdown');
-        const progressToggle = document.getElementById('progressToggle');
-        const progressSubmenu = document.getElementById('progressSubmenu');
-
-        menuBtn.addEventListener('click', () => {
-            menuBtn.classList.toggle('active');
-            dropdown.classList.toggle('active');
+<script>
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdown = document.getElementById('dropdown');
+    const progressToggle = document.getElementById('progressToggle');
+    const progressSubmenu = document.getElementById('progressSubmenu');
+    const settingsLink = document.getElementById('settingsLink');
+    
+    menuBtn.addEventListener('click', () => {
+        menuBtn.classList.toggle('active');
+        dropdown.classList.toggle('active');
+    });
+    
+    progressToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        progressSubmenu.classList.toggle('active');
+        progressToggle.classList.toggle('active');
+    });
+    
+    settingsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        openSettingsModal();
+        dropdown.classList.remove('active');
+        menuBtn.classList.remove('active');
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            menuBtn.classList.remove('active');
+            dropdown.classList.remove('active');
+            progressSubmenu.classList.remove('active');
+            progressToggle.classList.remove('active');
+        }
+    });
+    
+    document.querySelectorAll('.dropdown a').forEach(link => {
+        link.addEventListener('click', () => {
+            dropdown.classList.remove('active');
+            menuBtn.classList.remove('active');
         });
+    });
+    
+    // === Pengaturan Ukuran Teks ===
 
-        progressToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            progressSubmenu.classList.toggle('active');
-            progressToggle.classList.toggle('active');
-        });
+const settingsModal = document.getElementById('settingsModal');
+const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+const closeSettingsBtn = document.querySelector('#settingsModal .close');
 
-        document.addEventListener('click', (e) => {
-            if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
-                menuBtn.classList.remove('active');
-                dropdown.classList.remove('active');
-                progressSubmenu.classList.remove('active');
-                progressToggle.classList.remove('active');
-            }
-        });
+function updateDisplay(type, rawVal) {
+    const val = (rawVal / 10).toFixed(1);
+    document.documentElement.style.setProperty(`--${type}-size`, val + 'rem');
+    document.getElementById(`${type}Value`).textContent = val;
+}
 
-        // Tutup dropdown saat klik link di dalamnya
-        document.querySelectorAll('.dropdown a').forEach(link => {
-            link.addEventListener('click', () => {
-                dropdown.classList.remove('active');
-                menuBtn.classList.remove('active');
-                progressSubmenu.classList.remove('active');
-                progressToggle.classList.remove('active');
-            });
-        });
+function updateRangeFill(range) {
+    if (!range) return;
+    const min = parseFloat(range.min);
+    const max = parseFloat(range.max);
+    const val = parseFloat(range.value);
+    const percent = ((val - min) / (max - min)) * 100;
+    range.style.background = `linear-gradient(to right, var(--secondary) 0%, var(--secondary) ${percent}%, var(--light) ${percent}%, var(--light) 100%)`;
+}
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadDisplays('sore');
-        });
-    </script>
+// Ambil ukuran teks yang sedang aktif (bukan dari localStorage)
+function getCurrentRawSize(type) {
+    const style = getComputedStyle(document.documentElement);
+    const remVal = parseFloat(style.getPropertyValue(`--${type}-size`)) ||
+        (type === 'arabic' ? 1.8 : type === 'latin' ? 1.4 : 1.2);
+    return Math.round(remVal * 10); // 1.8rem → 18, dst.
+}
+
+let currentModal = null;
+
+function openSettingsModal() {
+    // Baca ukuran saat ini (yang sedang diterapkan)
+    const currentArabic = getCurrentRawSize('arabic');
+    const currentLatin = getCurrentRawSize('latin');
+    const currentTrans = getCurrentRawSize('trans');
+    
+    // Set slider sesuai ukuran saat ini
+    document.getElementById('arabicRange').value = currentArabic;
+    document.getElementById('latinRange').value = currentLatin;
+    document.getElementById('transRange').value = currentTrans;
+    
+    // Update tampilan nilai dan progress bar
+    updateDisplay('arabic', currentArabic);
+    updateDisplay('latin', currentLatin);
+    updateDisplay('trans', currentTrans);
+    
+    updateRangeFill(document.getElementById('arabicRange'));
+    updateRangeFill(document.getElementById('latinRange'));
+    updateRangeFill(document.getElementById('transRange'));
+    
+    settingsModal.classList.add('active');
+    document.body.classList.add('modal-open');
+    currentModal = 'settings';
+    history.pushState({ modalOpen: true }, '');
+}
+
+function closeSettingsModal() {
+    settingsModal.classList.remove('active');
+    document.body.classList.remove('modal-open');
+    currentModal = null;
+    if (history.state && history.state.modalOpen) {
+        history.back();
+    }
+}
+
+// Event slider (real-time)
+document.getElementById('arabicRange').addEventListener('input', (e) => {
+    updateDisplay('arabic', e.target.value);
+    updateRangeFill(e.target);
+});
+document.getElementById('latinRange').addEventListener('input', (e) => {
+    updateDisplay('latin', e.target.value);
+    updateRangeFill(e.target);
+});
+document.getElementById('transRange').addEventListener('input', (e) => {
+    updateDisplay('trans', e.target.value);
+    updateRangeFill(e.target);
+});
+
+// Tombol Simpan → simpan ke localStorage lalu tutup
+saveSettingsBtn.addEventListener('click', () => {
+    localStorage.setItem('arabicSize', document.getElementById('arabicRange').value);
+    localStorage.setItem('latinSize', document.getElementById('latinRange').value);
+    localStorage.setItem('transSize', document.getElementById('transRange').value);
+    closeSettingsModal();
+});
+
+closeSettingsBtn.addEventListener('click', closeSettingsModal);
+
+// Klik overlay
+settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) closeSettingsModal();
+});
+
+// Back button / swipe
+window.addEventListener('popstate', () => {
+    if (currentModal === 'settings') closeSettingsModal();
+});
+
+// Swipe to close (sudah ada, biarkan tetap)
+
+// Terapkan ukuran tersimpan saat halaman dimuat
+(function applySavedSizes() {
+    const savedArabic = localStorage.getItem('arabicSize') || '18';
+    const savedLatin = localStorage.getItem('latinSize') || '14';
+    const savedTrans = localStorage.getItem('transSize') || '12';
+    updateDisplay('arabic', savedArabic);
+    updateDisplay('latin', savedLatin);
+    updateDisplay('trans', savedTrans);
+})();
+</script>
 </body>
 </html>
