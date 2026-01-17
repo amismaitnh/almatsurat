@@ -448,7 +448,7 @@
             welcomeTitle.innerHTML = `Selamat Datang, ${userName}!`;
             nameBtn.textContent = "Ubah Nama";
             nameBtn.onclick = function() {
-                if (confirm('Reset semua data mutabaah dan nama pengguna? Modal akan muncul lagi untuk memasukkan nama baru.')) {
+                if (confirm('Reset data nama pengguna? Modal akan muncul lagi untuk memasukkan nama baru.')) {
                     localStorage.removeItem('mutabaahData');
                     localStorage.removeItem('mutabaahUserName');
                     location.reload();
