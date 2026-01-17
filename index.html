@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al-Ma'tsurat AMI SMAIT N</title>
+    <title>Al-Ma'tsurat AMI</title>
     <style>
         :root {
             --primary: #736b23;
@@ -22,11 +22,25 @@
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--light); color: var(--text); line-height: 1.6; }
         body.modal-open {
             overflow: hidden;
+            height: 100vh;
+            touch-action: none; /* mencegah scroll di mobile saat modal terbuka */
+        }/* Tambahan untuk animasi swipe */
+        .modal-content {
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
         }
-
+        .modal-content.swiping {
+            transition: none;
+        }
+        .modal-content.closing {
+            transform: translateY(100%) translateY(50px);
+            opacity: 0;
+        }
         header { background-color: white; color: var(--text); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .logo { display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; gap: 12px; }
         .logo-icon { width: 60px; height: 60px; border-radius: 50%; object-fit: contain; }
+        .logo-text { display: flex; flex-direction: column; justify-content: left; }
+        .school-name { font-size: 0.95rem; color: var(--text-light); margin-top: 1px; font-weight: normal; }
+
         .menu-btn { 
             display: flex; 
             flex-direction: column; 
@@ -158,15 +172,15 @@
             position: relative;
         }
         .modal-content h2 {
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             font-size: 2rem;
         }
         .modal .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
         .modal .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: .5rem;
             font-weight: bold;
             color: var(--text);
         }
@@ -209,7 +223,7 @@
             cursor: none;
             transition: background 0.2s;
         }
-        .custom-select .options li:hover {
+        .custom-select .options li:active {
             background: var(--light);
         }
 
@@ -236,7 +250,7 @@
             color: var(--text-light);
             cursor: none;
         }
-        .modal .close:hover {
+        .modal .close:active {
             color: var(--text);
         }
         .modal .skip {
@@ -249,32 +263,106 @@
             text-decoration: underline;
             cursor: none;
         }
+        
+        /* Custom Range Slider (ubah warna menjadi hijau) */
+.modal input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 10px;
+    background: var(--light);
+    border-radius: 10px;
+    outline: none;
+    margin: .5rem 0;
+}
+
+.modal input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 22px;
+    width: 22px;
+    border-radius: 50%;
+    background: var(--secondary);
+    cursor: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal input[type="range"]::-moz-range-track {
+    background: transparent;
+}
+
+.modal input[type="range"]::-moz-range-progress {
+    background: var(--secondary);
+    border-radius: 10px 0 0 10px;
+    height: 20px;
+}
 
         @media (max-width: 768px) { 
             .logo { font-size: 1.2rem; } 
+            .school-name { font-size: 0.85rem; }
             .welcome h1 { font-size: 2rem; } 
         }
+        /* Tambahan untuk animasi swipe */
+        .modal-content {
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+        .modal-content.swiping {
+            transition: none;
+        }
+        .modal-content.closing {
+            transform: translateY(100%) translateY(50px);
+            opacity: 0;
+        }   
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <a href="index.html"><img src="logo.png" alt="Logo Markaz Islami" class="logo-icon"></a>
+    
+<header>
+    <div class="logo">
+        <img src="logo.png" alt="Logo Markaz Islami" class="logo-icon">
+        <div class="logo-text">
             <h3>Aktivis Markaz Islami</h3>
+            <p class="school-name">SMAIT Nur Hidayah</p>
         </div>
-        <div class="menu-btn" id="menuBtn">
-            <span></span><span></span><span></span>
+    </div>
+    <div class="menu-btn" id="menuBtn">
+        <span></span><span></span><span></span>
+    </div>
+    <nav class="dropdown" id="dropdown">
+        <a href="index.html">Beranda</a>
+        <div class="menu-parent" id="progressToggle">
+            Dzikr <span class="arrow">&gt;</span>
         </div>
-        <nav class="dropdown" id="dropdown">
-            <div class="menu-parent" id="progressToggle">
-                Dzikr <span class="arrow">&gt;</span>
-            </div>
-            <div class="submenu" id="progressSubmenu">
-                <a href="morning.html">Pagi</a>
-                <a href="evening.html">Sore</a>
-            </div>
-        </nav>
-    </header>
+        <div class="submenu" id="progressSubmenu">
+            <a href="morning.html">Pagi</a>
+            <a href="evening.html">Sore</a>
+        </div>
+        <a href="#" id="settingsLink">Pengaturan</a>
+    </nav>
+</header>
+
+!-- Modal Pengaturan Ukuran Teks -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Pengaturan Ukuran Teks</h2>
+        <div class="form-group">
+            <label for="arabicRange">Teks Arab</label>
+            <input type="range" id="arabicRange" min="10" max="40" step="1">
+            <span id="arabicValue" style="display:block; margin-top:8px; font-weight:bold;">1.8rem</span>
+        </div>
+        <div class="form-group">
+            <label for="latinRange">Latin</label>
+            <input type="range" id="latinRange" min="8" max="30" step="1">
+            <span id="latinValue" style="display:block; margin-top:8px; font-weight:bold;">1.4rem</span>
+        </div>
+        <div class="form-group">
+            <label for="transRange">Terjemahan</label>
+            <input type="range" id="transRange" min="8" max="30" step="1">
+            <span id="transValue" style="display:block; margin-top:8px; font-weight:bold;">1.2rem</span>
+        </div>
+        <button class="submit-btn" id="saveSettingsBtn">Simpan</button>
+    </div>
+</div>
 
     <main>
         <section class="welcome">
@@ -321,176 +409,371 @@
         </div>
     </div>
 
-    <script>
-    const nameList = [
-        "Ahsanurrizqi", "Azmina Tsania Mafaza", "Alimul Haq Al Fatih", "Alifah Hasna Setyawan", "Aqila Hanin Najiyya",
-        "Farid Abrar Ramadhan", "Zalfan Almundzir", "Athiya Khaerunnisa", "Alma Ryzqya Ramadhani", "Fauzan Rijalul Jaddid",
-        "Hasna Rifaya Nafiah", "Ahmad Ali Nafis Mujahir", "Muhammad Faisal Iqbal", "Najwa Nur Azizah", "Aulia Devina Omantin",
-        "Fathir Hanifan Romadloni", "Tsabita Al Firdaus", "Syafiq Aufa Asykari", "Yasqi Azka Argani", "Ahmad Althaf Rizqillah",
-        "Naufal Ariq Saputra", "Fachryza Zuhair Nabil Arrazaq", "Fadhil Abdillah Ramadhan", "Muhammad Fathrizkzein Zidane",
-        "Muhammad Muzdahir Syafiq", "Aqila Adzkia", "Aufa Nissa' Al Majidah", "Faizah Mufidatun Azizah", "Fanny Afnan Jannati",
-        "Zharifah Himmah Al Alyyah", "Farah Asysan Syifa", "Najwa Aqilla Janitra", "Qanita Sharah Hafizhah", "Zainab Asshabira",
-        "Afra Mufidah Riyadi", "Nabila Tsabita Rahmania", "Yusuf Azzam Hafi", "Annisa Zulfa Salsabila", "Fadly Maulana An-Nafi",
-        "Nidzar Hammam Ismath", "Hidayat Nur Aziz", "Muhammad Imanulhaq", "Muhammad Tsaqib Hilmi A.", "Naufal Ghoniyun Karim",
-        "Reyza Emirsyah Hidayat", "Tsabit Abdussalam Akif N. S.", "Azalia Rahma Nirmala Dewi", "Najla Khairunnisa",
-        "Khansa Putri Risdianto", "Arkani Kayla Khairunnisa", "Ayesha Ahnaf Hammasyah", "Khonza Adzkia", "Chandrika Kania Damara",
-        "Aisya Nadira", "Hasna Dzakia Salma K.", "Kainuna Regita Khairunnisa", "Zahratul Khoiriyyah", "Sholiha Bilqis Trikurnia",
-        "Umar Fakhruddin Khairullah", "Aisyah Mar'atus Sholikah", "Maulana Ibnu Faiq", "Zaky Zydan Ramtizi",
-        "Azzam Nur Tsabita Arif", "Zufar Abdillah Tsaqif", "Rais Hikari", "Miftahuddin Ghoffar As Sidiq", "Affan Rasyid Ilman",
-        "Rizqi Akhtar Putra Sunanda", "Aderisti Maurelia Putri", "Aliya Nuha Humaira Mushoffa", "Nada Zaafarani Assyifa",
-        "Syarifah Nugraheningsih", "Salwaa Alyaa' Prameshwari", "Rofi Munajati", "Keyla Nurkhasna Qoni'ah",
-        "Athaya Yasmin Althafunnisa", "Khansa", "Zalyani Niswatun Nafi'ah", "Ikhtia Hauraya Annizar",
-        "Nisa'ul Akmaal G. M. N. L.", "Hilya Nada Aufia", "Syauqi Firdaus Fiiridhotillah", "Alyaa Widya Arza Sentosa",
-        "Rafif Syauqi Nashrullah", "Hanan Ahmad Mukhayyar", "Zaidan Rais Altair", "Rizqullah Jihada Muhsin", "Andrew Shea",
-        "Ayyash Dhiyaulhaq Cunggin", "Gaozhan Wiby Al-Karimi", "Ba'ayu Febria Ristika", "Fatimah Naura Ulya",
-        "Haura Nada Tsabita", "Nafisa Azka Armandriani", "Rona Karima", "Annisa Rahma Aji", "Alya Dini Khoirunnisa",
-        "Hayan Hadi Gunjaya", "Ibrahim Banu Atiro", "Lathifah Lubna Azizah", "Runaisha Afra Shofia A.",
-        "Luthfia Inafi Muthi'ah", "Veisya Saffaina Sasongko"
-    ];
-    
-    const menuBtn = document.getElementById('menuBtn');
-    const dropdown = document.getElementById('dropdown');
-    const progressToggle = document.getElementById('progressToggle');
-    const progressSubmenu = document.getElementById('progressSubmenu');
-    
-    menuBtn.addEventListener('click', () => {
-        menuBtn.classList.toggle('active');
-        dropdown.classList.toggle('active');
-    });
-    
-    progressToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        progressSubmenu.classList.toggle('active');
-        progressToggle.classList.toggle('active');
-    });
-    
-    document.addEventListener('click', (e) => {
-        if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
-            menuBtn.classList.remove('active');
-            dropdown.classList.remove('active');
-            progressSubmenu.classList.remove('active');
-            progressToggle.classList.remove('active');
-        }
-    });
-    
-    document.querySelectorAll('.dropdown a').forEach(link => {
-        link.addEventListener('click', () => {
-            dropdown.classList.remove('active');
-            menuBtn.classList.remove('active');
-            progressSubmenu.classList.remove('active');
-            progressToggle.classList.remove('active');
-        });
-    });
-    
-    // Custom select dan modal nama
-    const modalNameInput = document.getElementById('modalNameInput');
-    const modalOptions = document.getElementById('modalOptions');
-    const modalOptionsList = document.getElementById('modalOptionsList');
-    
-    function populateNameOptions(filter = '') {
-        modalOptionsList.innerHTML = '';
-        const filtered = nameList.filter(name => name.toLowerCase().includes(filter.toLowerCase()));
-        filtered.forEach(name => {
-            const li = document.createElement('li');
-            li.textContent = name;
-            li.addEventListener('click', () => {
-                modalNameInput.value = name;
-                modalOptions.classList.remove('active');
-            });
-            modalOptionsList.appendChild(li);
-        });
+    <script>// script.js - Full JavaScript for Al-Ma'tsurat AMI (index.html)
+// Extracted and cleaned as a standalone external JS file
+
+const nameList = [
+    "Ahsanurrizqi", "Azmina Tsania Mafaza", "Alimul Haq Al Fatih", "Alifah Hasna Setyawan", "Aqila Hanin Najiyya",
+    "Farid Abrar Ramadhan", "Zalfan Almundzir", "Athiya Khaerunnisa", "Alma Ryzqya Ramadhani", "Fauzan Rijalul Jaddid",
+    "Hasna Rifaya Nafiah", "Ahmad Ali Nafis Mujahir", "Muhammad Faisal Iqbal", "Najwa Nur Azizah", "Aulia Devina Omantin",
+    "Fathir Hanifan Romadloni", "Tsabita Al Firdaus", "Syafiq Aufa Asykari", "Yasqi Azka Argani", "Ahmad Althaf Rizqillah",
+    "Naufal Ariq Saputra", "Fachryza Zuhair Nabil Arrazaq", "Fadhil Abdillah Ramadhan", "Muhammad Fathrizkzein Zidane",
+    "Muhammad Muzdahir Syafiq", "Aqila Adzkia", "Aufa Nissa' Al Majidah", "Faizah Mufidatun Azizah", "Fanny Afnan Jannati",
+    "Zharifah Himmah Al Alyyah", "Farah Asysan Syifa", "Najwa Aqilla Janitra", "Qanita Sharah Hafizhah", "Zainab Asshabira",
+    "Afra Mufidah Riyadi", "Nabila Tsabita Rahmania", "Yusuf Azzam Hafi", "Annisa Zulfa Salsabila", "Fadly Maulana An-Nafi",
+    "Nidzar Hammam Ismath", "Hidayat Nur Aziz", "Muhammad Imanulhaq", "Muhammad Tsaqib Hilmi A.", "Naufal Ghoniyun Karim",
+    "Reyza Emirsyah Hidayat", "Tsabit Abdussalam Akif N. S.", "Azalia Rahma Nirmala Dewi", "Najla Khairunnisa",
+    "Khansa Putri Risdianto", "Arkani Kayla Khairunnisa", "Ayesha Ahnaf Hammasyah", "Khonza Adzkia", "Chandrika Kania Damara",
+    "Aisya Nadira", "Hasna Dzakia Salma K.", "Kainuna Regita Khairunnisa", "Zahratul Khoiriyyah", "Sholiha Bilqis Trikurnia",
+    "Umar Fakhruddin Khairullah", "Aisyah Mar'atus Sholikah", "Maulana Ibnu Faiq", "Zaky Zydan Ramtizi",
+    "Azzam Nur Tsabita Arif", "Zufar Abdillah Tsaqif", "Rais Hikari", "Miftahuddin Ghoffar As Sidiq", "Affan Rasyid Ilman",
+    "Rizqi Akhtar Putra Sunanda", "Aderisti Maurelia Putri", "Aliya Nuha Humaira Mushoffa", "Nada Zaafarani Assyifa",
+    "Syarifah Nugraheningsih", "Salwaa Alyaa' Prameshwari", "Rofi Munajati", "Keyla Nurkhasna Qoni'ah",
+    "Athaya Yasmin Althafunnisa", "Khansa", "Zalyani Niswatun Nafi'ah", "Ikhtia Hauraya Annizar",
+    "Nisa'ul Akmaal G. M. N. L.", "Hilya Nada Aufia", "Syauqi Firdaus Fiiridhotillah", "Alyaa Widya Arza Sentosa",
+    "Rafif Syauqi Nashrullah", "Hanan Ahmad Mukhayyar", "Zaidan Rais Altair", "Rizqullah Jihada Muhsin", "Andrew Shea",
+    "Ayyash Dhiyaulhaq Cunggin", "Gaozhan Wiby Al-Karimi", "Ba'ayu Febria Ristika", "Fatimah Naura Ulya",
+    "Haura Nada Tsabita", "Nafisa Azka Armandriani", "Rona Karima", "Annisa Rahma Aji", "Alya Dini Khoirunnisa",
+    "Hayan Hadi Gunjaya", "Ibrahim Banu Atiro", "Lathifah Lubna Azizah", "Runaisha Afra Shofia A.",
+    "Luthfia Inafi Muthi'ah", "Veisya Saffaina Sasongko"
+];
+
+// Elements
+const menuBtn = document.getElementById('menuBtn');
+const dropdown = document.getElementById('dropdown');
+const progressToggle = document.getElementById('progressToggle');
+const progressSubmenu = document.getElementById('progressSubmenu');
+const settingsLink = document.getElementById('settingsLink');
+
+const modalNameInput = document.getElementById('modalNameInput');
+const modalOptions = document.getElementById('modalOptions');
+const modalOptionsList = document.getElementById('modalOptionsList');
+
+const nameModal = document.getElementById('nameModal');
+const saveNameBtn = document.getElementById('saveNameBtn');
+const closeBtnName = document.querySelector('#nameModal .close');
+const skipLink = document.getElementById('skipLink');
+const welcomeTitle = document.getElementById('welcomeTitle');
+const nameBtn = document.getElementById('nameBtn');
+
+const settingsModal = document.getElementById('settingsModal');
+const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+const closeBtnSettings = document.querySelector('#settingsModal .close');
+
+// Menu dropdown handling
+menuBtn.addEventListener('click', () => {
+    menuBtn.classList.toggle('active');
+    dropdown.classList.toggle('active');
+});
+
+progressToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    progressSubmenu.classList.toggle('active');
+    progressToggle.classList.toggle('active');
+});
+
+settingsLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    openSettingsModal();
+    dropdown.classList.remove('active');
+    menuBtn.classList.remove('active');
+});
+
+document.addEventListener('click', (e) => {
+    if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
+        menuBtn.classList.remove('active');
+        dropdown.classList.remove('active');
+        progressSubmenu.classList.remove('active');
+        progressToggle.classList.remove('active');
     }
-    
-    modalNameInput.addEventListener('click', () => {
-        populateNameOptions(modalNameInput.value.trim());
-        modalOptions.classList.add('active');
+});
+
+document.querySelectorAll('.dropdown a').forEach(link => {
+    link.addEventListener('click', () => {
+        dropdown.classList.remove('active');
+        menuBtn.classList.remove('active');
     });
-    
-    modalNameInput.addEventListener('focus', () => {
-        populateNameOptions(modalNameInput.value.trim());
-        modalOptions.classList.add('active');
-    });
-    
-    modalNameInput.addEventListener('input', () => {
-        populateNameOptions(modalNameInput.value.trim());
-    });
-    
-    document.addEventListener('click', (e) => {
-        if (!modalNameInput.contains(e.target) && !modalOptions.contains(e.target)) {
+});
+
+// Custom select for name modal
+function populateNameOptions(filter = '') {
+    modalOptionsList.innerHTML = '';
+    const filtered = nameList.filter(name => name.toLowerCase().includes(filter.toLowerCase()));
+    filtered.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        li.addEventListener('click', () => {
+            modalNameInput.value = name;
             modalOptions.classList.remove('active');
-        }
+        });
+        modalOptionsList.appendChild(li);
     });
-    
-    const nameModal = document.getElementById('nameModal');
-    const saveNameBtn = document.getElementById('saveNameBtn');
-    const closeBtn = document.querySelector('#nameModal .close');
-    const skipLink = document.getElementById('skipLink');
-    const welcomeTitle = document.getElementById('welcomeTitle');
-    const nameBtn = document.getElementById('nameBtn');
-    
-    function openModal() {
-        nameModal.classList.add('active');
-        document.body.classList.add('modal-open');
-        modalNameInput.value = '';
+}
+
+modalNameInput.addEventListener('click', () => {
+    populateNameOptions(modalNameInput.value.trim());
+    modalOptions.classList.add('active');
+});
+
+modalNameInput.addEventListener('focus', () => {
+    populateNameOptions(modalNameInput.value.trim());
+    modalOptions.classList.add('active');
+});
+
+modalNameInput.addEventListener('input', () => {
+    populateNameOptions(modalNameInput.value.trim());
+});
+
+document.addEventListener('click', (e) => {
+    if (!modalNameInput.contains(e.target) && !modalOptions.contains(e.target)) {
         modalOptions.classList.remove('active');
     }
-    
-    function closeModal() {
-        nameModal.classList.remove('active');
-        document.body.classList.remove('modal-open');
+});
+
+// Name modal logic
+let currentModal = null;
+
+function openModal() {
+    nameModal.classList.add('active');
+    document.body.classList.add('modal-open');
+    modalNameInput.value = '';
+    modalOptions.classList.remove('active');
+    currentModal = 'name';
+    history.pushState({ modalOpen: true }, '');
+}
+
+function closeModal() {
+    nameModal.classList.remove('active');
+    document.body.classList.remove('modal-open');
+    currentModal = null;
+}
+
+function openSettingsModal() {
+    const savedArabic = localStorage.getItem('arabicSize') || '18';
+    const savedLatin = localStorage.getItem('latinSize') || '14';
+    const savedTrans = localStorage.getItem('transSize') || '12';
+
+    document.getElementById('arabicRange').value = savedArabic;
+    document.getElementById('latinRange').value = savedLatin;
+    document.getElementById('transRange').value = savedTrans;
+
+    updateDisplay('arabic', savedArabic);
+    updateDisplay('latin', savedLatin);
+    updateDisplay('trans', savedTrans);
+
+    updateRangeFill(document.getElementById('arabicRange'));
+    updateRangeFill(document.getElementById('latinRange'));
+    updateRangeFill(document.getElementById('transRange'));
+
+    settingsModal.classList.add('active');
+    document.body.classList.add('modal-open');
+    currentModal = 'settings';
+    history.pushState({ modalOpen: true }, '');
+}
+
+function closeSettingsModal() {
+    settingsModal.classList.remove('active');
+    document.body.classList.remove('modal-open');
+    currentModal = null;
+}
+
+// Name handling & welcome message
+let userName = localStorage.getItem('mutabaahUserName');
+let hasSkipped = localStorage.getItem('skipModal') === 'true';
+
+function updateWelcomeAndButton() {
+    if (userName) {
+        welcomeTitle.innerHTML = `Selamat Datang, ${userName}!`;
+        nameBtn.textContent = "Ubah Nama";
+        nameBtn.onclick = function () {
+            if (confirm('Reset data nama pengguna? Modal akan muncul lagi untuk memasukkan nama baru.')) {
+                localStorage.removeItem('mutabaahData');
+                localStorage.removeItem('mutabaahUserName');
+                localStorage.removeItem('skipModal');
+                location.reload();
+            }
+        };
+    } else {
+        welcomeTitle.innerHTML = "Selamat Datang di Al Ma'tsurat AMI";
+        nameBtn.textContent = "Masukkan Nama";
+        nameBtn.onclick = openModal;
     }
-    
-    let userName = localStorage.getItem('mutabaahUserName');
-    let hasSkipped = localStorage.getItem('skipModal') === 'true';
-    
-    function updateWelcomeAndButton() {
-        if (userName) {
-            welcomeTitle.innerHTML = `Selamat Datang, ${userName}!`;
-            nameBtn.textContent = "Ubah Nama";
-            nameBtn.onclick = function() {
-                if (confirm('Reset data nama pengguna? Modal akan muncul lagi untuk memasukkan nama baru.')) {
-                    localStorage.removeItem('mutabaahData');
-                    localStorage.removeItem('mutabaahUserName');
-                    localStorage.removeItem('skipModal');
-                    location.reload();
-                }
-            };
-        } else {
-            welcomeTitle.innerHTML = "Selamat Datang di Al Ma'tsurat AMI";
-            nameBtn.textContent = "Masukkan Nama";
-            nameBtn.onclick = openModal;
-        }
+}
+
+updateWelcomeAndButton();
+
+if (!userName && !hasSkipped) {
+    openModal();
+}
+
+saveNameBtn.addEventListener('click', () => {
+    const name = modalNameInput.value.trim();
+    if (name) {
+        localStorage.setItem('mutabaahUserName', name);
+        localStorage.removeItem('skipModal');
+        userName = name;
+        updateWelcomeAndButton();
+        closeModal();
+    } else {
+        alert('Mohon masukkan nama Anda.');
     }
-    
-    updateWelcomeAndButton();
-    
-    if (!userName && !hasSkipped) {
-        openModal();
-    }
-    
-    saveNameBtn.addEventListener('click', () => {
-        const name = modalNameInput.value.trim();
-        if (name) {
-            localStorage.setItem('mutabaahUserName', name);
-            localStorage.removeItem('skipModal');
-            userName = name;
-            updateWelcomeAndButton();
-            closeModal();
-        } else {
-            alert('Mohon masukkan nama Anda.');
-        }
-    });
-    
-    closeBtn.addEventListener('click', () => {
+});
+
+closeBtnName.addEventListener('click', () => {
+    closeModal();
+    localStorage.setItem('skipModal', 'true');
+});
+
+skipLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeModal();
+    localStorage.setItem('skipModal', 'true');
+});
+
+// Text size settings
+function updateDisplay(type, rawVal) {
+    const val = (rawVal / 10).toFixed(1);
+    document.documentElement.style.setProperty(`--${type}-size`, val + 'rem');
+    document.getElementById(`${type}Value`).textContent = val;
+}
+
+function updateRangeFill(range) {
+    if (!range) return;
+    const min = parseFloat(range.min);
+    const max = parseFloat(range.max);
+    const val = parseFloat(range.value);
+    const percent = ((val - min) / (max - min)) * 100;
+    range.style.background = `linear-gradient(to right, var(--secondary) 0%, var(--secondary) ${percent}%, var(--light) ${percent}%, var(--light) 100%)`;
+}
+
+document.getElementById('arabicRange').addEventListener('input', (e) => {
+    updateDisplay('arabic', e.target.value);
+    updateRangeFill(e.target);
+});
+document.getElementById('latinRange').addEventListener('input', (e) => {
+    updateDisplay('latin', e.target.value);
+    updateRangeFill(e.target);
+});
+document.getElementById('transRange').addEventListener('input', (e) => {
+    updateDisplay('trans', e.target.value);
+    updateRangeFill(e.target);
+});
+
+saveSettingsBtn.addEventListener('click', () => {
+    localStorage.setItem('arabicSize', document.getElementById('arabicRange').value);
+    localStorage.setItem('latinSize', document.getElementById('latinRange').value);
+    localStorage.setItem('transSize', document.getElementById('transRange').value);
+    closeSettingsModal();
+});
+
+closeBtnSettings.addEventListener('click', closeSettingsModal);
+
+// Click outside to close (only closes modal, no history navigation)
+nameModal.addEventListener('click', (e) => {
+    if (e.target === nameModal) {
         closeModal();
         localStorage.setItem('skipModal', 'true');
-    });
-    
-    skipLink.addEventListener('click', (e) => {
-        e.preventDefault();
+    }
+});
+
+settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) {
+        closeSettingsModal();
+    }
+});
+
+// Device back button still closes modal
+window.addEventListener('popstate', () => {
+    if (currentModal === 'name') {
         closeModal();
         localStorage.setItem('skipModal', 'true');
+    } else if (currentModal === 'settings') {
+        closeSettingsModal();
+    }
+});
+
+// Swipe to close (down or left)
+function addSwipeToClose(modalElement, closeFunction) {
+    const content = modalElement.querySelector('.modal-content');
+    let startY = 0, startX = 0, currentY = 0, currentX = 0;
+    let isInteractiveTouch = false;
+
+    content.addEventListener('touchstart', (e) => {
+        const touchTarget = e.touches[0].target;
+        if (
+            touchTarget.closest('input') ||
+            touchTarget.closest('button') ||
+            touchTarget.closest('.custom-select') ||
+            touchTarget.closest('.options')
+        ) {
+            isInteractiveTouch = true;
+            return;
+        }
+        isInteractiveTouch = false;
+        startY = e.touches[0].clientY;
+        startX = e.touches[0].clientX;
+        currentY = startY;
+        currentX = startX;
+        content.classList.add('swiping');
     });
-    </script>
+
+    content.addEventListener('touchmove', (e) => {
+        if (isInteractiveTouch) return;
+        currentY = e.touches[0].clientY;
+        currentX = e.touches[0].clientX;
+        const deltaY = currentY - startY;
+        const deltaX = currentX - startX;
+        if (deltaY > 0 || deltaX < 0) {
+            const translateY = Math.max(0, deltaY);
+            const translateX = Math.min(0, deltaX);
+            content.style.transform = `translateY(\( {translateY}px) translateX( \){translateX}px)`;
+            content.style.opacity = 1 - (Math.max(Math.abs(deltaY), Math.abs(deltaX)) / 300);
+        }
+    });
+
+    content.addEventListener('touchend', () => {
+        if (isInteractiveTouch) {
+            content.classList.remove('swiping');
+            return;
+        }
+        const deltaY = currentY - startY;
+        const deltaX = currentX - startX;
+        const swipedDown = deltaY > 100 && Math.abs(deltaY) > Math.abs(deltaX);
+        const swipedLeft = Math.abs(deltaX) > 100 && Math.abs(deltaX) > Math.abs(deltaY) && deltaX < 0;
+
+        if (swipedDown || swipedLeft) {
+            content.classList.add('closing');
+            content.style.transform = '';
+            content.style.opacity = '';
+            setTimeout(() => {
+                closeFunction();
+                content.classList.remove('swiping', 'closing');
+                content.style.transform = '';
+                content.style.opacity = '';
+            }, 300);
+        } else {
+            content.style.transform = '';
+            content.style.opacity = '';
+            content.classList.remove('swiping');
+        }
+    });
+}
+
+addSwipeToClose(nameModal, () => {
+    closeModal();
+    localStorage.setItem('skipModal', 'true');
+});
+addSwipeToClose(settingsModal, closeSettingsModal);
+
+// Apply saved text sizes on load
+(function applySavedSizes() {
+    const savedArabic = localStorage.getItem('arabicSize') || '18';
+    const savedLatin = localStorage.getItem('latinSize') || '14';
+    const savedTrans = localStorage.getItem('transSize') || '12';
+    updateDisplay('arabic', savedArabic);
+    updateDisplay('latin', savedLatin);
+    updateDisplay('trans', savedTrans);
+})();
+</script>
 </body>
 </html>
