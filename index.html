@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al-Ma'tsurat Aktivis Markaz Islami</title>
+    <title>Al-Ma'tsurat AMI SMAIT N</title>
     <style>
         :root {
             --primary: #736b23;
@@ -431,7 +431,6 @@
     function openModal() {
         nameModal.classList.add('active');
         document.body.classList.add('modal-open');
-        // Tidak fokus otomatis agar dropdown tidak langsung muncul
         modalNameInput.value = '';
         modalOptions.classList.remove('active');
     }
@@ -442,6 +441,7 @@
     }
     
     let userName = localStorage.getItem('mutabaahUserName');
+    let hasSkipped = localStorage.getItem('skipModal') === 'true';
     
     function updateWelcomeAndButton() {
         if (userName) {
@@ -451,6 +451,7 @@
                 if (confirm('Reset data nama pengguna? Modal akan muncul lagi untuk memasukkan nama baru.')) {
                     localStorage.removeItem('mutabaahData');
                     localStorage.removeItem('mutabaahUserName');
+                    localStorage.removeItem('skipModal');
                     location.reload();
                 }
             };
@@ -463,7 +464,7 @@
     
     updateWelcomeAndButton();
     
-    if (!userName) {
+    if (!userName && !hasSkipped) {
         openModal();
     }
     
@@ -471,6 +472,7 @@
         const name = modalNameInput.value.trim();
         if (name) {
             localStorage.setItem('mutabaahUserName', name);
+            localStorage.removeItem('skipModal');
             userName = name;
             updateWelcomeAndButton();
             closeModal();
@@ -479,10 +481,15 @@
         }
     });
     
-    closeBtn.addEventListener('click', closeModal);
+    closeBtn.addEventListener('click', () => {
+        closeModal();
+        localStorage.setItem('skipModal', 'true');
+    });
+    
     skipLink.addEventListener('click', (e) => {
         e.preventDefault();
         closeModal();
+        localStorage.setItem('skipModal', 'true');
     });
     </script>
 </body>
