@@ -129,7 +129,7 @@
         .goals h2 { color: var(--text); font-size: 2rem; }
         .goals a { color: var(--text); text-decoration: none; cursor: none; }
         .card h3 { color: var(--text); font-size: 1.6rem; }
-        .reset-btn { display: block; margin: 5rem auto; padding: 1rem 2rem; background: #e74c3c; color: white; border: none; border-radius: 50px; cursor: none; }
+        .reset-btn { display: block; margin: 5rem auto; padding: 1rem 2rem; background: white; color: var(--text); border: none; border-radius: 50px; cursor: none; }
 
         /* Modal styles */
         .modal {
@@ -298,11 +298,11 @@
                 </div>
             </div>
 
-            <button class="reset-btn" onclick="if(confirm('Reset data nama pengguna? Modal nama akan muncul lagi.')) { localStorage.removeItem('mutabaahData'); localStorage.removeItem('mutabaahUserName'); location.reload(); }">Reset Data</button>
+            <button id="nameBtn" class="reset-btn">Masukkan Nama</button>
         </div>
     </main>
 
-    <!-- Modal Input Nama (nama bebas, daftar hanya sebagai saran) -->
+    <!-- Modal Input Nama -->
     <div id="nameModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -322,7 +322,7 @@
     </div>
 
     <script>
-    const nameList = [ /* daftar nama tetap sama seperti kode asli */
+    const nameList = [
         "Ahsanurrizqi", "Azmina Tsania Mafaza", "Alimul Haq Al Fatih", "Alifah Hasna Setyawan", "Aqila Hanin Najiyya",
         "Farid Abrar Ramadhan", "Zalfan Almundzir", "Athiya Khaerunnisa", "Alma Ryzqya Ramadhani", "Fauzan Rijalul Jaddid",
         "Hasna Rifaya Nafiah", "Ahmad Ali Nafis Mujahir", "Muhammad Faisal Iqbal", "Najwa Nur Azizah", "Aulia Devina Omantin",
@@ -373,7 +373,6 @@
         }
     });
     
-    // Tutup dropdown saat mengklik link di dalamnya (sebelum navigasi)
     document.querySelectorAll('.dropdown a').forEach(link => {
         link.addEventListener('click', () => {
             dropdown.classList.remove('active');
@@ -383,7 +382,7 @@
         });
     });
     
-    // Custom select dan modal nama (tetap sama seperti kode asli)
+    // Custom select dan modal nama
     const modalNameInput = document.getElementById('modalNameInput');
     const modalOptions = document.getElementById('modalOptions');
     const modalOptionsList = document.getElementById('modalOptionsList');
@@ -403,7 +402,7 @@
     }
     
     modalNameInput.addEventListener('click', () => {
-        populateNameOptions('');
+        populateNameOptions(modalNameInput.value.trim());
         modalOptions.classList.add('active');
     });
     
@@ -427,11 +426,14 @@
     const closeBtn = document.querySelector('#nameModal .close');
     const skipLink = document.getElementById('skipLink');
     const welcomeTitle = document.getElementById('welcomeTitle');
+    const nameBtn = document.getElementById('nameBtn');
     
     function openModal() {
         nameModal.classList.add('active');
         document.body.classList.add('modal-open');
-        populateNameOptions('');
+        // Tidak fokus otomatis agar dropdown tidak langsung muncul
+        modalNameInput.value = '';
+        modalOptions.classList.remove('active');
     }
     
     function closeModal() {
@@ -439,11 +441,29 @@
         document.body.classList.remove('modal-open');
     }
     
-    const savedName = localStorage.getItem('mutabaahUserName');
+    let userName = localStorage.getItem('mutabaahUserName');
     
-    if (savedName) {
-        welcomeTitle.innerHTML = `Selamat Datang, ${savedName}!`;
-    } else {
+    function updateWelcomeAndButton() {
+        if (userName) {
+            welcomeTitle.innerHTML = `Selamat Datang, ${userName}!`;
+            nameBtn.textContent = "Ubah Nama";
+            nameBtn.onclick = function() {
+                if (confirm('Reset semua data mutabaah dan nama pengguna? Modal akan muncul lagi untuk memasukkan nama baru.')) {
+                    localStorage.removeItem('mutabaahData');
+                    localStorage.removeItem('mutabaahUserName');
+                    location.reload();
+                }
+            };
+        } else {
+            welcomeTitle.innerHTML = "Selamat Datang Al Ma'tsurat AMI";
+            nameBtn.textContent = "Masukkan Nama";
+            nameBtn.onclick = openModal;
+        }
+    }
+    
+    updateWelcomeAndButton();
+    
+    if (!userName) {
         openModal();
     }
     
@@ -451,7 +471,8 @@
         const name = modalNameInput.value.trim();
         if (name) {
             localStorage.setItem('mutabaahUserName', name);
-            welcomeTitle.innerHTML = `Selamat Datang, ${name}!`;
+            userName = name;
+            updateWelcomeAndButton();
             closeModal();
         } else {
             alert('Mohon masukkan nama Anda.');
@@ -463,6 +484,6 @@
         e.preventDefault();
         closeModal();
     });
-</script>
+    </script>
 </body>
 </html>
