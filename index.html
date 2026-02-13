@@ -774,6 +774,28 @@ addSwipeToClose(settingsModal, closeSettingsModal);
     updateDisplay('latin', savedLatin);
     updateDisplay('trans', savedTrans);
 })();
+
+// Apply saved font sizes on every page load
+(function applyFontSizes() {
+    // Get saved sizes from localStorage or use defaults
+    const savedArabic = localStorage.getItem('arabicSize') || '18';
+    const savedLatin = localStorage.getItem('latinSize') || '14';
+    const savedTrans = localStorage.getItem('transSize') || '12';
+    
+    // Apply to CSS variables
+    document.documentElement.style.setProperty('--arabic-size', (savedArabic / 10) + 'rem');
+    document.documentElement.style.setProperty('--latin-size', (savedLatin / 10) + 'rem');
+    document.documentElement.style.setProperty('--trans-size', (savedTrans / 10) + 'rem');
+    
+    // Update display values if elements exist
+    const arabicValue = document.getElementById('arabicValue');
+    const latinValue = document.getElementById('latinValue');
+    const transValue = document.getElementById('transValue');
+    
+    if (arabicValue) arabicValue.textContent = (savedArabic / 10).toFixed(1) + 'rem';
+    if (latinValue) latinValue.textContent = (savedLatin / 10).toFixed(1) + 'rem';
+    if (transValue) transValue.textContent = (savedTrans / 10).toFixed(1) + 'rem';
+})();
 </script>
 </body>
 </html>
